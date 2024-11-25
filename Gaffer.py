@@ -98,8 +98,8 @@ def fetch_team_stats(email, password, matches, manager_data):
                 team_match = team_match[team_match["team_name"] == team_name]
                 if not team_match.empty:
                     data.append(team_match)
-            except Exception as e:
-                st.warning(f"Error fetching stats for match ID {match_id}: {e}")
+            except Exception:
+                pass
 
         if data:
             data = pd.concat(data)
