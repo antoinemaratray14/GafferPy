@@ -25,7 +25,8 @@ COMPETITIONS = {
     10: "🇩🇪2. Bundesliga",
     179: "🇩🇪3. Liga",
     44: "🇺🇸Major League Soccer",
-    88: "🇳🇴Eliteserien"
+    88: "🇳🇴Eliteserien",
+    51: "🏴󠁧󠁢󠁳󠁣󠁴󠁿SPL"
     
 }
 
