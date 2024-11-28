@@ -20,8 +20,13 @@ COMPETITIONS = {
     75: "🇸🇪Allsvenskan",
     108: "🇯🇵J1 League",
     3: "🏴󠁧󠁢󠁥󠁮󠁧󠁿Championship",
+    4: "🏴󠁧󠁢󠁥󠁮󠁧󠁿League One",
     76: "🇨🇿Chance Liga",
-    10: "🇩🇪2. Bundesliga"
+    10: "🇩🇪2. Bundesliga",
+    179: "🇩🇪3. Liga",
+    44: "🇺🇸Major League Soccer",
+    88: "🇳🇴Eliteserien"
+    
 }
 
 SEASONS = {
@@ -30,6 +35,10 @@ SEASONS = {
     281: "2023/2024",
     107: "2023",
     235: "2022/2023",
+    106: "2022",
+    108: "2021/2022",
+    91: "2021",
+    90: "2020/2021"
 }
 
 # Metrics to display
