@@ -223,23 +223,26 @@ if email and password:
             # Define your custom gradient colors
             custom_cmap = mcolors.LinearSegmentedColormap.from_list("", ["#fcb9b2", "#461220"])
             
-            # Generate bar charts for each metric
+            # Map the number of games managed to colors
+            colors = filtered_data["games_managed"].apply(lambda x: custom_cmap(norm(x)))
+
+            st.write("### Comparison")
             for metric, label in METRICS.items():
-                if label in filtered_data.columns:  # Check if the metric exists
-                    # Normalize `games_managed` to create the color gradient
-                    norm = mcolors.Normalize(vmin=filtered_data["games_managed"].min(), vmax=filtered_data["games_managed"].max())
-                    custom_colors = filtered_data["games_managed"].apply(lambda x: custom_cmap(norm(x)))
-            
-                    # Plot the bar chart
+                if label in filtered_data.columns:  # Use the mapped name
                     fig, ax = plt.subplots(figsize=(8, 6))
+            
+                    # Normalize based on the current metric column
+                    norm = mcolors.Normalize(vmin=filtered_data[label].min(), vmax=filtered_data[label].max())
+                    colors = filtered_data[label].apply(lambda x: custom_cmap(norm(x)))
+            
                     sns.barplot(
                         data=filtered_data,
-                        x=metric,  # Metric values determine bar heights
-                        y="manager",  # Managers on the y-axis
-                        palette=custom_colors.tolist(),  # Colors are based on games_managed
+                        x=label,  # Use the mapped column name for x-axis
+                        y="manager",
+                        palette=colors,  # Apply dynamic colors
                         ax=ax
                     )
-                    ax.set_title(f"{label} (Bar Color = Games Managed)")
-                    ax.set_xlabel(label)
+                    ax.set_title(f"{label}")
+                    ax.set_xlabel("")  # Removes the label below the x-axis
                     ax.set_ylabel("Managers")
                     st.pyplot(fig)
