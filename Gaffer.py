@@ -11,6 +11,8 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from statsbombpy import sb
+import matplotlib.colors as mcolors
+import matplotlib.cm as cm
 
 # Manual mapping of competitions and seasons
 COMPETITIONS = {
@@ -143,15 +145,15 @@ if email and password:
     selected_seasons = st.sidebar.multiselect("Select Seasons", list(SEASONS.values()), default=list(SEASONS.values())[:1])
     
     st.sidebar.slider("Minimum Matches Managed", 1, 50, 5, 1, key="min_matches")
-    st.sidebar.slider("Open Play xG", 0.0, 3.0, 0.0, 0.1, key="min_op_xg")
-    st.sidebar.slider("Set Piece xG", 0.0, 1.0, 0.0, 0.05, key="min_sp_xg")
-    st.sidebar.slider("PPDA", 18.0, 0.0, 18.0, -1.0, key="max_ppda")
-    st.sidebar.slider("Counter Attacking Shots", 0.0, 3.0, 0.0, 0.1, key="min_counter_shots")
-    st.sidebar.slider("Open Play Shot Distance", 30.0, 10.0, 30.0, -1.0, key="max_shot_distance")
-    st.sidebar.slider("Open Play Shot Distance Conceded", 10.0, 30.0, 10.0, 1.0, key="min_shot_distance_conceded")
-    st.sidebar.slider("Pressures in opposition half Ratio", 0.0, 1.0, 0.0, 0.05, key="min_fhalf_pressure")
-    st.sidebar.slider("Possession Ratio", 0.0, 1.0, 0.0, 0.05, key="min_possession")
-    st.sidebar.slider("xG Conceded", 3.0, 0.0, 3.0, -0.1, key="max_xg_conceded")
+    st.sidebar.slider("Open Play xG Range", 0.0, 3.0, (0.0, 3.0), 0.1, key="op_xg_range")
+    st.sidebar.slider("Set Piece xG", 0.0, 1.0, (0.0, 1.0), 0.05, key="sp_xg_range")
+    st.sidebar.slider("PPDA", 18.0, 0.0, (18.0, 0.0), -1.0, key="ppda_range")
+    st.sidebar.slider("Counter Attacking Shots", 0.0, 3.0, (0.0, 3.0), 0.1, key="counter_shots_range")
+    st.sidebar.slider("Open Play Shot Distance", 30.0, 10.0, (30.0, 10.0), -1.0, key="shot_distance_range")
+    st.sidebar.slider("Open Play Shot Distance Conceded", 10.0, 30.0, (10.0, 30.0), 1.0, key="shot_distance_conceded_range")
+    st.sidebar.slider("Pressures in opposition half Ratio", 0.0, 1.0, (0.0, 1.0), 0.05, key="fhalf_pressure_range")
+    st.sidebar.slider("Possession Ratio", 0.0, 1.0, (0.0, 1.0), 0.05, key="possession_range")
+    st.sidebar.slider("xG Conceded", 3.0, 0.0, (3.0, 0.0), -0.1, key="xg_conceded_range")
 
     if st.sidebar.button("Load Data") or st.session_state.data_loaded:
         if not st.session_state.data_loaded:
@@ -196,15 +198,15 @@ if email and password:
         # Apply filtering logic based on slider values
         filtered_data = cleaned_data[
             (cleaned_data["games_managed"] >= st.session_state.min_matches) &
-            (cleaned_data["Open Play xG"] >= st.session_state.min_op_xg) &
-            (cleaned_data["Set Piece xG"] >= st.session_state.min_sp_xg) &
-            (cleaned_data["PPDA"] <= st.session_state.max_ppda) &
-            (cleaned_data["Counter Attacking Shots"] >= st.session_state.min_counter_shots) &
-            (cleaned_data["Open Play Shot Distance"] <= st.session_state.max_shot_distance) &
-            (cleaned_data["Open Play Shot Distance Conceded"] >= st.session_state.min_shot_distance_conceded) &
-            (cleaned_data["Pressures in opposition half Ratio"] >= st.session_state.min_fhalf_pressure) &
-            (cleaned_data["Possession Ratio"] >= st.session_state.min_possession) &
-            (cleaned_data["xG Conceded"] <= st.session_state.max_xg_conceded)
+            (cleaned_data["Open Play xG"].between(*st.session_state.op_xg_range)) &
+            (cleaned_data["Set Piece xG"].between (*st.session_state.sp_xg_range)) &
+            (cleaned_data["PPDA"].between (*st.session_state.ppda_range)) &
+            (cleaned_data["Counter Attacking Shots"].between (*st.session_state.counter_shots_range)) &
+            (cleaned_data["Open Play Shot Distance"].between (*st.session_state.shot_distance_range)) &
+            (cleaned_data["Open Play Shot Distance Conceded"].between (*st.session_state.shot_distance_conceded_range)) &
+            (cleaned_data["Pressures in opposition half Ratio"].between (*st.session_state.fhalf_pressure_range)) &
+            (cleaned_data["Possession Ratio"].between (*st.session_state.possession_range)) &
+            (cleaned_data["xG Conceded"].between (*st.session_state.xg_conceded_range))
         ]
 
         if filtered_data.empty:
@@ -213,19 +215,26 @@ if email and password:
             st.write("### Selected Managers")
             st.dataframe(filtered_data)
 
+
+            # Normalize games managed for the color mapping
+            norm = mcolors.Normalize(vmin=filtered_data["games_managed"].min(), vmax=filtered_data["games_managed"].max())
+            cmap = cm.get_cmap("Reds")  # Choose a colormap or define a custom one
+            
+            # Define your custom gradient colors
+            custom_cmap = mcolors.LinearSegmentedColormap.from_list("", ["#fcb9b2", "#461220"])
+            
+            # Map the number of games managed to colors
+            colors = filtered_data["games_managed"].apply(lambda x: custom_cmap(norm(x)))
+
             st.write("### Comparison")
             for metric, label in METRICS.items():
                 if label in filtered_data.columns:
                     fig, ax = plt.subplots(figsize=(8, 6))
-                    sns.scatterplot(
+                    sns.barplot(
                         data=filtered_data,
-                        x=label,
+                        x="games_managed",
                         y="manager",
-                        size="games_managed",
-                        sizes=(50, 300),
-                        alpha=0.9,
-                        color="red",
-                        legend=False,
+                        palette=colors,  
                         ax=ax
                     )
                     ax.set_title(f"{label}")
