@@ -220,7 +220,7 @@ if email and password:
             cmap = cm.get_cmap("Reds")  # Choose a colormap or define a custom one
             
             # Define your custom gradient colors
-            custom_cmap = mcolors.LinearSegmentedColormap.from_list("", ["#fcb9b2", "#461220"])
+            custom_cmap = mcolors.LinearSegmentedColormap.from_list("", ["#bbdefb", "#0d47a1"])
             
             # Map the number of games managed to colors
             colors = filtered_data["games_managed"].apply(lambda x: custom_cmap(norm(x)))
