@@ -225,7 +225,7 @@ if email and password:
             # Map the number of games managed to colors
             colors = filtered_data["games_managed"].apply(lambda x: custom_cmap(norm(x)))
 
-            st.write("### Comparison")
+            st.write("### Comparison | Darker: More Games Managed")
             # Normalize the 'games_managed' column for consistent color mapping
             norm = mcolors.Normalize(vmin=filtered_data["games_managed"].min(), vmax=filtered_data["games_managed"].max())
             color_map = {manager: custom_cmap(norm(games)) for manager, games in zip(filtered_data["manager"], filtered_data["games_managed"])}
