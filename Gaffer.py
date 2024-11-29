@@ -224,19 +224,17 @@ if email and password:
             custom_cmap = mcolors.LinearSegmentedColormap.from_list("", ["#fcb9b2", "#461220"])
             
             # Map the number of games managed to colors
-            colors = filtered_data["games_managed"].apply(lambda x: custom_cmap(norm(x)))
-
-            st.write("### Comparison")
-            for metric, label in METRICS.items():
-                if label in filtered_data.columns:
-                    fig, ax = plt.subplots(figsize=(8, 6))
-                    sns.barplot(
-                        data=filtered_data,
-                        x="games_managed",
-                        y="manager",
-                        palette=colors,  
-                        ax=ax
-                    )
+            colors = list(filtered_data["games_managed"].apply(lambda x: custom_cmap(norm(x))))
+            
+            # Plot the bar chart
+            fig, ax = plt.subplots(figsize=(8, 6))
+            sns.barplot(
+                data=filtered_data,
+                x="games_managed",
+                y="manager",
+                palette=colors, 
+                ax=ax
+            )
                     ax.set_title(f"{label}")
                     ax.set_xlabel("")  # Removes the label below the x-axis
                     ax.set_ylabel("Managers")
