@@ -223,9 +223,12 @@ if email and password:
             # Define your custom gradient colors
             custom_cmap = mcolors.LinearSegmentedColormap.from_list("", ["#fcb9b2", "#461220"])
             
-            # Dynamically generate bar charts for each metric
+            # Generate bar charts for each metric
             for metric, label in METRICS.items():
                 if label in filtered_data.columns:
+                    # Ensure the data is clean and numeric
+                    filtered_data = filtered_data.dropna(subset=["games_managed", metric])
+            
                     # Normalize games managed for consistent color mapping
                     norm = mcolors.Normalize(vmin=filtered_data["games_managed"].min(), vmax=filtered_data["games_managed"].max())
                     colors = list(filtered_data["games_managed"].apply(lambda x: custom_cmap(norm(x))))
@@ -234,9 +237,9 @@ if email and password:
                     fig, ax = plt.subplots(figsize=(8, 6))
                     sns.barplot(
                         data=filtered_data,
-                        x=metric,  # The x-axis is the current metric
-                        y="manager",
-                        palette=colors,  # Colors are still mapped to games managed
+                        x=metric,  
+                        y="manager", 
+                        palette=colors, 
                         ax=ax
                     )
                     ax.set_title(label)
