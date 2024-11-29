@@ -225,24 +225,21 @@ if email and password:
             
             # Generate bar charts for each metric
             for metric, label in METRICS.items():
-                if label in filtered_data.columns:
-                    # Ensure the data is clean and numeric
-                    filtered_data = filtered_data.dropna(subset=["games_managed", metric])
-            
-                    # Normalize games managed for consistent color mapping
+                if label in filtered_data.columns:  # Check if the metric exists
+                    # Normalize `games_managed` to create the color gradient
                     norm = mcolors.Normalize(vmin=filtered_data["games_managed"].min(), vmax=filtered_data["games_managed"].max())
-                    colors = list(filtered_data["games_managed"].apply(lambda x: custom_cmap(norm(x))))
+                    custom_colors = filtered_data["games_managed"].apply(lambda x: custom_cmap(norm(x)))
             
                     # Plot the bar chart
                     fig, ax = plt.subplots(figsize=(8, 6))
                     sns.barplot(
                         data=filtered_data,
-                        x=metric,  
-                        y="manager", 
-                        palette=colors, 
+                        x=metric,  # Metric values determine bar heights
+                        y="manager",  # Managers on the y-axis
+                        palette=custom_colors.tolist(),  # Colors are based on games_managed
                         ax=ax
                     )
-                    ax.set_title(label)
+                    ax.set_title(f"{label} (Bar Color = Games Managed)")
                     ax.set_xlabel(label)
                     ax.set_ylabel("Managers")
                     st.pyplot(fig)
