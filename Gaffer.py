@@ -228,21 +228,26 @@ if email and password:
 
             st.write("### Comparison")
             for metric, label in METRICS.items():
-                if label in filtered_data.columns:  # Use the mapped name
+                if label in filtered_data.columns:  # Ensure the column exists in the filtered data
                     fig, ax = plt.subplots(figsize=(8, 6))
             
-                    # Normalize based on the current metric column
+                    # Normalize the metric column for consistent color mapping
                     norm = mcolors.Normalize(vmin=filtered_data[label].min(), vmax=filtered_data[label].max())
-                    colors = filtered_data[label].apply(lambda x: custom_cmap(norm(x)))
+                    color_list = [custom_cmap(norm(value)) for value in filtered_data[label]]  # Generate color list
             
+                    # Plot using the color list
                     sns.barplot(
                         data=filtered_data,
-                        x=label,  # Use the mapped column name for x-axis
+                        x=label,  # Use the mapped column name for the x-axis
                         y="manager",
-                        palette=colors,  # Apply dynamic colors
+                        palette=color_list,  # Pass the list of colors directly
                         ax=ax
                     )
+            
+                    # Set chart title and labels
                     ax.set_title(f"{label}")
-                    ax.set_xlabel("")  # Removes the label below the x-axis
+                    ax.set_xlabel("")  # Remove x-axis label
                     ax.set_ylabel("Managers")
                     st.pyplot(fig)
+                else:
+                    st.warning(f"Column '{label}' is missing in the data.")
