@@ -226,17 +226,17 @@ if email and password:
             # Dynamically generate bar charts for each metric
             for metric, label in METRICS.items():
                 if label in filtered_data.columns:
-                    # Normalize the metric values for color mapping
-                    norm = mcolors.Normalize(vmin=filtered_data[metric].min(), vmax=filtered_data[metric].max())
-                    colors = list(filtered_data[metric].apply(lambda x: custom_cmap(norm(x))))
+                    # Normalize games managed for consistent color mapping
+                    norm = mcolors.Normalize(vmin=filtered_data["games_managed"].min(), vmax=filtered_data["games_managed"].max())
+                    colors = list(filtered_data["games_managed"].apply(lambda x: custom_cmap(norm(x))))
             
                     # Plot the bar chart
                     fig, ax = plt.subplots(figsize=(8, 6))
                     sns.barplot(
                         data=filtered_data,
-                        x=metric,  # Dynamically adjust x-axis based on the current metric
+                        x=metric,  # The x-axis is the current metric
                         y="manager",
-                        palette=colors,  # Color bars based on the metric values
+                        palette=colors,  # Colors are still mapped to games managed
                         ax=ax
                     )
                     ax.set_title(label)
