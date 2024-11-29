@@ -208,7 +208,6 @@ if email and password:
             (cleaned_data["Possession Ratio"].between (*st.session_state.possession_range)) &
             (cleaned_data["xG Conceded"].between (*st.session_state.xg_conceded_range))
         ]
-
         if filtered_data.empty:
             st.warning("No managers meet the selected criteria. Adjust your filters and try again.")
         else:
@@ -227,20 +226,23 @@ if email and password:
             colors = filtered_data["games_managed"].apply(lambda x: custom_cmap(norm(x)))
 
             st.write("### Comparison")
+            # Normalize the 'games_managed' column for consistent color mapping
+            norm = mcolors.Normalize(vmin=filtered_data["games_managed"].min(), vmax=filtered_data["games_managed"].max())
+            color_map = {manager: custom_cmap(norm(games)) for manager, games in zip(filtered_data["manager"], filtered_data["games_managed"])}
+            
             for metric, label in METRICS.items():
                 if label in filtered_data.columns:  # Ensure the column exists in the filtered data
                     fig, ax = plt.subplots(figsize=(8, 6))
             
-                    # Normalize the metric column for consistent color mapping
-                    norm = mcolors.Normalize(vmin=filtered_data[label].min(), vmax=filtered_data[label].max())
-                    color_list = [custom_cmap(norm(value)) for value in filtered_data[label]]  # Generate color list
+                    # Generate a list of colors based on the manager's games managed
+                    color_list = [color_map[manager] for manager in filtered_data["manager"]]
             
-                    # Plot using the color list
+                    # Plot using the consistent color list
                     sns.barplot(
                         data=filtered_data,
                         x=label,  # Use the mapped column name for the x-axis
                         y="manager",
-                        palette=color_list,  # Pass the list of colors directly
+                        palette=color_list,  # Apply the consistent color list
                         ax=ax
                     )
             
@@ -249,5 +251,3 @@ if email and password:
                     ax.set_xlabel("")  # Remove x-axis label
                     ax.set_ylabel("Managers")
                     st.pyplot(fig)
-                else:
-                    st.warning(f"Column '{label}' is missing in the data.")
