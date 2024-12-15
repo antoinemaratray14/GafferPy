@@ -21,7 +21,7 @@ COMPETITIONS = {
     7: "🇫🇷Ligue 1",
     75: "🇸🇪Allsvenskan",
     108: "🇯🇵J1 League",
-    2: "🏴󠁧󠁢󠁥󠁮󠁧󠁿Premier League"
+    2: "🏴󠁧󠁢󠁥󠁮󠁧󠁿Premier League",
     3: "🏴󠁧󠁢󠁥󠁮󠁧󠁿Championship",
     4: "🏴󠁧󠁢󠁥󠁮󠁧󠁿League One",
     76: "🇨🇿Chance Liga",
